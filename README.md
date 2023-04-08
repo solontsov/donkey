@@ -1,1 +1,1 @@
-# donkey Puzzle game
+# Donkey (puzzle game)
