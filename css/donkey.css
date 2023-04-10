@@ -12,7 +12,7 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    font-size: 2rem;
+    font-size: min(8vw, 6vh);
     gap: 2px;
     background-color: #022;
     border: 5px solid #022;
@@ -24,9 +24,7 @@ body {
     margin-top: min(12vw, 10vh);
 }
 
-
-
-.dnk-box {
+.dnk-box, .dnk-boxa {
     background-color: #055;
     color: #fff;
     
@@ -34,33 +32,57 @@ body {
     place-content: center center;
 }
 
-
-.dnk-box1, .dnk-box3, .dnk-box4, .dnk-box6 {
-    grid-row: span 2 ;
+/* starting position of boxes on grid */
+.dnk-box1 {
+    grid-row: 1 / span 2;
+    grid-column: 1;
 }
+.dnk-box2 {
+    grid-row: 1 / span 2;
+    grid-column: 2 / span 2;
+}
+.dnk-box3 {
+    grid-row: 1 / span 2;
+    grid-column: 4;
+}
+.dnk-box4 {
+    grid-row: 3 / span 2 ;
+    grid-column: 1;
+}
+.dnk-box5 {
+    grid-row: 3;
+    grid-column: 2 / span 2;
 
+}
 .dnk-box6 {
     grid-column: 4;
     grid-row: 3 / span 2 ;
 }
-.ab {
-    position: absolute;
-    background-color: blueviolet;
-    z-index: 1;
+.dnk-box7 {
+    grid-row: 5 ;
+    grid-column: 2;
 }
-.dnk-box2 {
-    grid-row: 1 / span 2 ;
-    grid-column: 2 / span 2;
+.dnk-box8 {
+    grid-row: 4 ;
+    grid-column: 3;
+}
+.dnk-box9 {
+    grid-row: 5 ;
+    grid-column: 1;
 }
 .dnk-box10 {
     grid-row: 5 ;
     grid-column: 4;
 }
-.dnk-box5 {
-    grid-column:  span 2;
+
+
+.dnk-box1a, .dnk-box2a, .dnk-box3a, .dnk-box4a, .dnk-box5a, .dnk-box6a, .dnk-box7a, .dnk-box8a, .dnk-box9a, .dnk-box10a {
+    display: none;
+    position: absolute;
 }
 
-.dnk-boxe1, .dnk-boxe2 {
-    color: #022;
-    background-color: #022;
+.ab {
+    position: absolute;
+    background-color: blueviolet;
+    z-index: 1;
 }
