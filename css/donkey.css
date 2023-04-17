@@ -32,51 +32,7 @@ body {
     place-content: center center;
 }
 
-/* starting position of boxes on grid */
-.dnk-box1 {
-    grid-row: 1 / span 2;
-    grid-column: 1;
-}
-.dnk-box2 {
-    grid-row: 1 / span 2;
-    grid-column: 2 / span 2;
-}
-.dnk-box3 {
-    grid-row: 1 / span 2;
-    grid-column: 4;
-}
-.dnk-box4 {
-    grid-row: 3 / span 2 ;
-    grid-column: 1;
-}
-.dnk-box5 {
-    grid-row: 3;
-    grid-column: 2 / span 2;
-
-}
-.dnk-box6 {
-    grid-column: 4;
-    grid-row: 3 / span 2 ;
-}
-.dnk-box7 {
-    grid-row: 5 ;
-    grid-column: 2;
-}
-.dnk-box8 {
-    grid-row: 4 ;
-    grid-column: 3;
-}
-.dnk-box9 {
-    grid-row: 5 ;
-    grid-column: 1;
-}
-.dnk-box10 {
-    grid-row: 5 ;
-    grid-column: 4;
-}
-
-
-.dnk-box1a, .dnk-box2a, .dnk-box3a, .dnk-box4a, .dnk-box5a, .dnk-box6a, .dnk-box7a, .dnk-box8a, .dnk-box9a, .dnk-box10a {
+.dnk-boxa {
     display: none;
     position: absolute;
 }

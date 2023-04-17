@@ -30,6 +30,8 @@ class DonkeyGame {
         self.spaces = [{ row: 5, column: 2 }, { row: 5, column: 3 }];
     }
 
+
+
 }
 
 class DonkeyBox {
@@ -52,14 +54,29 @@ class DonkeyBox {
         element.style.gridColumn = `${this.column} / span ${this.width}`;
         
         // add click handlers
-        element.addEventListener("click", this.handleClick);
+        // to make "this" available inside method handleClick 
+        // we can use (e) => this.handleClick(e) or this.handleClick.bind(this)
+        element.addEventListener("click", (e) => this.handleClick(e) ); 
 
         donkeyGameContainer.appendChild(element);
     }
 
+    //returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
+    placesToMove() {
+        let spaces = donkeyGame.spaces;
+
+
+    }
 
     handleClick = (e) => {
+        // check ability to move
+        if (!this.ableToMove()) return;
+
+        // for small boxes (1 by 1) there might be 2 direction to move 
+        let partClicked = 1;
+
         //TODO: handle clicks
+        console.log("CLICK", this.column)
         console.log("CLICK", e.target)
 
         //put corresponding box with absolute position above the clicked one
