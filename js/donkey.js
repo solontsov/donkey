@@ -22,12 +22,12 @@ class DonkeyGame {
 
     constructor() {
         //array of DonkeyBox-es
-        self.boxArray = [];
+        this.boxArray = [];
         for (let index = 0; index < 10; index++) {
-            self.boxArray.push(new DonkeyBox(getBoxProps(index)));
+            this.boxArray.push(new DonkeyBox(getBoxProps(index)));
         }
         //array of two objects that represent empty spaces - places where boxes can be moved
-        self.spaces = [{ row: 5, column: 2 }, { row: 5, column: 3 }];
+        this.spaces = [{ row: 5, column: 2 }, { row: 5, column: 3 }];
     }
 
 
@@ -48,29 +48,47 @@ class DonkeyBox {
     createVisualElement() {
         let element = document.createElement("div");
         element.innerHTML = this.name;
-        
+
         element.className = "dnk-box";
         element.style.gridRow = `${this.row} / span ${this.height}`;
         element.style.gridColumn = `${this.column} / span ${this.width}`;
-        
+
         // add click handlers
         // to make "this" available inside method handleClick 
         // we can use (e) => this.handleClick(e) or this.handleClick.bind(this)
-        element.addEventListener("click", (e) => this.handleClick(e) ); 
+        element.addEventListener("click", (e) => this.handleClick(e));
 
         donkeyGameContainer.appendChild(element);
     }
 
+
+    //check if there is a space above the box
+    checkSpaceAbove() {
+        let row = this.row - 1; //row above
+        for (let column = this.column; column < this.column + this.width; column++) {
+            if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
+        }
+        return true;
+    }
+
     //returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
-    placesToMove() {
-        let spaces = donkeyGame.spaces;
+    // if there is no place to move, then returns [] (empty array)
+    findPlacesToMove() {
+        let result = [];
 
+        //check if there is a space above, under, on the left, on the right
+        if (this.checkSpaceAbove()) result.push({ row: this.row - 1, column: this.column });
+        console.log("checkSpaceAbove", this.checkSpaceAbove())
 
+        return result;
     }
 
     handleClick = (e) => {
+
         // check ability to move
-        if (!this.ableToMove()) return;
+        let placesToMove = this.findPlacesToMove();
+        if (placesToMove.length == 0) return;
+
 
         // for small boxes (1 by 1) there might be 2 direction to move 
         let partClicked = 1;
@@ -82,7 +100,7 @@ class DonkeyBox {
         //put corresponding box with absolute position above the clicked one
 
         //hide the clicked box (aligned to grid)
-        e.target.style.display = 'none';
+        //e.target.style.display = 'none';
 
         //change the absolute position 
 
