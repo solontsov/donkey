@@ -30,6 +30,29 @@ class DonkeyGame {
         this.spaces = [{ row: 5, column: 2 }, { row: 5, column: 3 }];
     }
 
+    updateSpaces() {
+        // array representing 5 rows with 4 columns
+        let arr = Array.from({length: 5}, () => Array(4).fill(true)); 
+
+        //mark element of the array occupied by boxes as false, remaining "true" elements would represent spaces 
+        for (const box of this.boxArray) {
+            const {row, column, width, height} = box;
+            for (let i = row; i < row + height; i++) {
+                for (let j = column; j < column + width; j++) {
+                    arr[i-1][j-1] = false;
+                }    
+            }
+        }
+        //record spaces position
+        this.spaces = [];
+        for (let i = 1; i <= 5; i++) {
+            for (let j = 1; j <= 4; j++) {
+                if (arr[i-1][j-1]) this.spaces.push({row: i, column: j});
+            }    
+        }
+        console.log(this.spaces);
+    }
+
 
 
 }
@@ -78,7 +101,7 @@ class DonkeyBox {
 
     //check if there is a space under the box
     checkSpaceUnder() {
-        let row = this.row + 1; //row under
+        let row = this.row + this.height; //row under
         for (let column = this.column; column < this.column + this.width; column++) {
             if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
         }
@@ -95,7 +118,7 @@ class DonkeyBox {
 
     //check if there is a space on the right of the box
     checkSpaceRight() {
-        let column = this.column + 1; // column on the right
+        let column = this.column + this.width; // column on the right
         for (let row = this.row; row < this.row + this.height; row++) {
             if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
         }
@@ -114,12 +137,6 @@ class DonkeyBox {
         if (this.checkSpaceLeft()) result.push({ row: this.row, column: this.column - 1 });
         if (this.checkSpaceRight()) result.push({ row: this.row, column: this.column + 1 });
 
-        //TODO: debug
-        // console.log("checkSpaceAbove", this.checkSpaceAbove())
-        // console.log("checkSpaceUnder", this.checkSpaceUnder())
-        // console.log("checkSpaceLeft", this.checkSpaceLeft())
-        // console.log("checkSpaceRight", this.checkSpaceRight())
-
         return result;
     }
 
@@ -129,19 +146,37 @@ class DonkeyBox {
         let placesToMove = this.findPlacesToMove();
         if (placesToMove.length == 0) return;
 
+        // element in grid layout
+        let element = e.target;
+        
         let index = 0; // first element of placesToMove, if there is only one place
 
         if (placesToMove.length == 2) {
             // 2 direction to move. By clicked part we need to determine direction
-            // TODO:
-            index = 1; //just to test
+            index = 0; // first option
+            console.log(e.offsetX, e.offsetY)
 
-            // for small boxes (1 by 1) there might be  
+            // for small boxes (1 by 1) there might be  opposite and 90 degrees different directions
+            if ( placesToMove[0].row == placesToMove[1].row) {
+                // moving horizontally
+                if (e.offsetX < element.clientWidth / 2) { //
+                    index = 1;    
+                }
+            } else if (placesToMove[0].column == placesToMove[1].column) {
+                // moving vertically
+                if (e.offsetY < element.clientHeight / 2) { //
+                    index = 1;    
+                }
+            }
+            else {
+                // 90 degrees different directions 
+                // there are 4 possible variants of empty spaces layouts relative to clicked box
+                
+            }
             let partClicked = 1;
+            // TODO:
         }
 
-        // element in grid layout
-        let element = e.target;
 
         //put corresponding box with absolute position above the clicked one
         //TODO: 
@@ -150,9 +185,9 @@ class DonkeyBox {
         //e.target.style.display = 'none';
 
         //make changes in object model 
-        //deal with spaces
-        
         Object.assign(this, placesToMove[index]);
+        //deal with spaces
+        donkeyGame.updateSpaces();
         
         //change the absolute position 
 
