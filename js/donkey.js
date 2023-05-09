@@ -1,213 +1,254 @@
-// starting position -  [ [row1, column1], [row2, column2], ..., [row10, column10] ] 
-const donkeyGameStartingPosition = [[1, 1], [1, 2], [1, 4], [3, 1], [3, 2], [3, 4], [4, 2], [4, 3], [5, 1], [5, 4]];
+// starting position -  [ [row1, column1], [row2, column2], ..., [row10, column10] ]
+const donkeyGameStartingPosition = [
+  [1, 1],
+  [1, 2],
+  [1, 4],
+  [3, 1],
+  [3, 2],
+  [3, 4],
+  [4, 2],
+  [4, 3],
+  [5, 1],
+  [5, 4],
+];
 
-// box dimensions -  [ [width1, height1], [width2, height2], ..., [width10, height10] ] 
-const boxDimensions = [[1, 2], [2, 2], [1, 2], [1, 2], [2, 1], [1, 2], [1, 1], [1, 1], [1, 1], [1, 1]];
+// box dimensions -  [ [width1, height1], [width2, height2], ..., [width10, height10] ]
+const boxDimensions = [
+  [1, 2],
+  [2, 2],
+  [1, 2],
+  [1, 2],
+  [2, 1],
+  [1, 2],
+  [1, 1],
+  [1, 1],
+  [1, 1],
+  [1, 1],
+];
 
 const donkeyGameContainer = document.querySelector(".donkey-game");
 
 let donkeyGame; //instance of DonkeyGame class
 
 function getBoxProps(index) {
-    let props = {}
+  let props = {};
 
-    props.name = (index + 1).toString();
-    [props.row, props.column] = donkeyGameStartingPosition[index];
-    [props.width, props.height] = boxDimensions[index];
-    return props;
+  props.name = (index + 1).toString();
+  [props.row, props.column] = donkeyGameStartingPosition[index];
+  [props.width, props.height] = boxDimensions[index];
+  return props;
 }
 
 // represents array of boxes and rules of there movements
 class DonkeyGame {
-
-    constructor() {
-        //array of DonkeyBox-es
-        this.boxArray = [];
-        for (let index = 0; index < 10; index++) {
-            this.boxArray.push(new DonkeyBox(getBoxProps(index)));
-        }
-        //array of two objects that represent empty spaces - places where boxes can be moved
-        this.spaces = [{ row: 5, column: 2 }, { row: 5, column: 3 }];
+  constructor() {
+    //array of DonkeyBox-es
+    this.boxArray = [];
+    for (let index = 0; index < 10; index++) {
+      this.boxArray.push(new DonkeyBox(getBoxProps(index)));
     }
+    //array of two objects that represent empty spaces - places where boxes can be moved
+    this.spaces = [
+      { row: 5, column: 2 },
+      { row: 5, column: 3 },
+    ];
+  }
 
-    updateSpaces() {
-        // array representing 5 rows with 4 columns
-        let arr = Array.from({length: 5}, () => Array(4).fill(true)); 
+  updateSpaces() {
+    // array representing 5 rows with 4 columns
+    let arr = Array.from({ length: 5 }, () => Array(4).fill(true));
 
-        //mark element of the array occupied by boxes as false, remaining "true" elements would represent spaces 
-        for (const box of this.boxArray) {
-            const {row, column, width, height} = box;
-            for (let i = row; i < row + height; i++) {
-                for (let j = column; j < column + width; j++) {
-                    arr[i-1][j-1] = false;
-                }    
-            }
+    //mark element of the array occupied by boxes as false, remaining "true" elements would represent spaces
+    for (const box of this.boxArray) {
+      const { row, column, width, height } = box;
+      for (let i = row; i < row + height; i++) {
+        for (let j = column; j < column + width; j++) {
+          arr[i - 1][j - 1] = false;
         }
-        //record spaces position
-        this.spaces = [];
-        for (let i = 1; i <= 5; i++) {
-            for (let j = 1; j <= 4; j++) {
-                if (arr[i-1][j-1]) this.spaces.push({row: i, column: j});
-            }    
-        }
-        console.log(this.spaces);
+      }
     }
-
-
-
+    //record spaces position
+    this.spaces = [];
+    for (let i = 1; i <= 5; i++) {
+      for (let j = 1; j <= 4; j++) {
+        if (arr[i - 1][j - 1]) this.spaces.push({ row: i, column: j });
+      }
+    }
+    console.log(this.spaces);
+  }
 }
 
 class DonkeyBox {
-    constructor(props) {
-        this.name = props.name;
-        this.row = props.row;
-        this.column = props.column;
-        this.width = props.width;
-        this.height = props.height;
+  constructor(props) {
+    this.name = props.name;
+    this.row = props.row;
+    this.column = props.column;
+    this.width = props.width;
+    this.height = props.height;
 
-        this.createVisualElement();
+    this.createVisualElement();
+  }
+
+  setGridPosition(element) {
+    element.style.gridRow = `${this.row} / span ${this.height}`;
+    element.style.gridColumn = `${this.column} / span ${this.width}`;
+  }
+
+  createVisualElement() {
+    let element = document.createElement("div");
+    element.innerHTML = this.name;
+
+    element.className = "dnk-box";
+    this.setGridPosition(element);
+
+    // add click handlers
+    // to make "this" available inside method handleClick
+    // we can use (e) => this.handleClick(e) or this.handleClick.bind(this)
+    element.addEventListener("click", (e) => this.handleClick(e));
+
+    donkeyGameContainer.appendChild(element);
+  }
+
+  //check if there is a space above the box
+  checkSpaceAbove() {
+    let row = this.row - 1; //row above
+    for (
+      let column = this.column;
+      column < this.column + this.width;
+      column++
+    ) {
+      if (
+        !donkeyGame.spaces.some(
+          (space) => space.row === row && space.column === column
+        )
+      )
+        return false;
     }
+    return true;
+  }
 
-    setGridPosition(element) {
-        element.style.gridRow = `${this.row} / span ${this.height}`;
-        element.style.gridColumn = `${this.column} / span ${this.width}`;
-
+  //check if there is a space under the box
+  checkSpaceUnder() {
+    let row = this.row + this.height; //row under
+    for (
+      let column = this.column;
+      column < this.column + this.width;
+      column++
+    ) {
+      if (
+        !donkeyGame.spaces.some(
+          (space) => space.row === row && space.column === column
+        )
+      )
+        return false;
     }
-
-    createVisualElement() {
-        let element = document.createElement("div");
-        element.innerHTML = this.name;
-
-        element.className = "dnk-box";
-        this.setGridPosition(element);
-
-        // add click handlers
-        // to make "this" available inside method handleClick 
-        // we can use (e) => this.handleClick(e) or this.handleClick.bind(this)
-        element.addEventListener("click", (e) => this.handleClick(e));
-
-        donkeyGameContainer.appendChild(element);
+    return true;
+  }
+  //check if there is a space on the left of the box
+  checkSpaceLeft() {
+    let column = this.column - 1; // column on the left
+    for (let row = this.row; row < this.row + this.height; row++) {
+      if (
+        !donkeyGame.spaces.some(
+          (space) => space.row === row && space.column === column
+        )
+      )
+        return false;
     }
+    return true;
+  }
 
+  //check if there is a space on the right of the box
+  checkSpaceRight() {
+    let column = this.column + this.width; // column on the right
+    for (let row = this.row; row < this.row + this.height; row++) {
+      if (
+        !donkeyGame.spaces.some(
+          (space) => space.row === row && space.column === column
+        )
+      )
+        return false;
+    }
+    return true;
+  }
 
-    //check if there is a space above the box
-    checkSpaceAbove() {
-        let row = this.row - 1; //row above
-        for (let column = this.column; column < this.column + this.width; column++) {
-            if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
+  //returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
+  // if there is no place to move, then returns [] (empty array)
+  findPlacesToMove() {
+    let result = [];
+
+    //check if there is a space above, under, on the left, on the right
+    if (this.checkSpaceAbove())
+      result.push({ row: this.row - 1, column: this.column });
+    if (this.checkSpaceUnder())
+      result.push({ row: this.row + 1, column: this.column });
+    if (this.checkSpaceLeft())
+      result.push({ row: this.row, column: this.column - 1 });
+    if (this.checkSpaceRight())
+      result.push({ row: this.row, column: this.column + 1 });
+
+    return result;
+  }
+
+  handleClick = (e) => {
+    // check ability to move
+    let placesToMove = this.findPlacesToMove();
+    if (placesToMove.length == 0) return;
+
+    // element in grid layout
+    let element = e.target;
+
+    let index = 0; // first element of placesToMove, if there is only one place
+
+    if (placesToMove.length == 2) {
+      // 2 direction to move. By clicked part we need to determine direction
+      index = 0; // first option
+      console.log(e.offsetX, e.offsetY);
+
+      // for small boxes (1 by 1) there might be  opposite and 90 degrees different directions
+      if (placesToMove[0].row == placesToMove[1].row) {
+        // moving horizontally
+        if (e.offsetX < element.clientWidth / 2) {
+          //
+          index = 1;
         }
-        return true;
-    }
-
-    //check if there is a space under the box
-    checkSpaceUnder() {
-        let row = this.row + this.height; //row under
-        for (let column = this.column; column < this.column + this.width; column++) {
-            if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
+      } else if (placesToMove[0].column == placesToMove[1].column) {
+        // moving vertically
+        if (e.offsetY < element.clientHeight / 2) {
+          //
+          index = 1;
         }
-        return true;
-    }
-    //check if there is a space on the left of the box
-    checkSpaceLeft() {
-        let column = this.column - 1; // column on the left
-        for (let row = this.row; row < this.row + this.height; row++) {
-            if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
-        }
-        return true;
+      } else {
+        // 90 degrees different directions
+        // there are 4 possible variants of empty spaces layouts relative to clicked box
+      }
+      let partClicked = 1;
+      // TODO:
     }
 
-    //check if there is a space on the right of the box
-    checkSpaceRight() {
-        let column = this.column + this.width; // column on the right
-        for (let row = this.row; row < this.row + this.height; row++) {
-            if (!donkeyGame.spaces.some(space => space.row === row && space.column === column)) return false;
-        }
-        return true;
-    }
+    //put corresponding box with absolute position above the clicked one
+    //TODO:
 
+    //hide the clicked box (aligned to grid)
+    //e.target.style.display = 'none';
 
-    //returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
-    // if there is no place to move, then returns [] (empty array)
-    findPlacesToMove() {
-        let result = [];
+    //make changes in object model
+    Object.assign(this, placesToMove[index]);
+    //deal with spaces
+    donkeyGame.updateSpaces();
 
-        //check if there is a space above, under, on the left, on the right
-        if (this.checkSpaceAbove()) result.push({ row: this.row - 1, column: this.column });
-        if (this.checkSpaceUnder()) result.push({ row: this.row + 1, column: this.column });
-        if (this.checkSpaceLeft()) result.push({ row: this.row, column: this.column - 1 });
-        if (this.checkSpaceRight()) result.push({ row: this.row, column: this.column + 1 });
+    //change the absolute position
 
-        return result;
-    }
+    //change grid position of the clicked box
+    this.setGridPosition(element);
 
-    handleClick = (e) => {
+    //show the clicked box after delay
 
-        // check ability to move
-        let placesToMove = this.findPlacesToMove();
-        if (placesToMove.length == 0) return;
-
-        // element in grid layout
-        let element = e.target;
-        
-        let index = 0; // first element of placesToMove, if there is only one place
-
-        if (placesToMove.length == 2) {
-            // 2 direction to move. By clicked part we need to determine direction
-            index = 0; // first option
-            console.log(e.offsetX, e.offsetY)
-
-            // for small boxes (1 by 1) there might be  opposite and 90 degrees different directions
-            if ( placesToMove[0].row == placesToMove[1].row) {
-                // moving horizontally
-                if (e.offsetX < element.clientWidth / 2) { //
-                    index = 1;    
-                }
-            } else if (placesToMove[0].column == placesToMove[1].column) {
-                // moving vertically
-                if (e.offsetY < element.clientHeight / 2) { //
-                    index = 1;    
-                }
-            }
-            else {
-                // 90 degrees different directions 
-                // there are 4 possible variants of empty spaces layouts relative to clicked box
-                
-            }
-            let partClicked = 1;
-            // TODO:
-        }
-
-
-        //put corresponding box with absolute position above the clicked one
-        //TODO: 
-
-        //hide the clicked box (aligned to grid)
-        //e.target.style.display = 'none';
-
-        //make changes in object model 
-        Object.assign(this, placesToMove[index]);
-        //deal with spaces
-        donkeyGame.updateSpaces();
-        
-        //change the absolute position 
-
-        //change grid position of the clicked box
-        this.setGridPosition(element);
-
-        //show the clicked box after delay 
-
-        //hide box with absolute position
-    }
-
+    //hide box with absolute position
+  };
 }
-
-
-
-
 
 // when documents loads
 document.addEventListener("DOMContentLoaded", () => {
-    donkeyGame = new DonkeyGame();
-
-}
-);
+  donkeyGame = new DonkeyGame();
+});
