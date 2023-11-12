@@ -39,7 +39,7 @@ function getBoxProps(index) {
   return props;
 }
 
-// represents array of boxes and rules of there movements
+// represents array of boxes and rules of their movements
 class DonkeyGame {
   constructor() {
     //array of DonkeyBox-es
@@ -74,7 +74,6 @@ class DonkeyGame {
         if (arr[i - 1][j - 1]) this.spaces.push({ row: i, column: j });
       }
     }
-    console.log(this.spaces);
   }
 }
 
@@ -172,20 +171,21 @@ class DonkeyBox {
     return true;
   }
 
-  //returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
+  // returns array of possible places, that are objects. For example, [ { row: 5, column: 2 }, {} ]
   // if there is no place to move, then returns [] (empty array)
   findPlacesToMove() {
     let result = [];
 
-    //check if there is a space above, under, on the left, on the right
+    // check if there is a space above, on the right, under, on the left
+    // order is important for later movement direction determination
     if (this.checkSpaceAbove())
       result.push({ row: this.row - 1, column: this.column });
+    if (this.checkSpaceRight())
+      result.push({ row: this.row, column: this.column + 1 });
     if (this.checkSpaceUnder())
       result.push({ row: this.row + 1, column: this.column });
     if (this.checkSpaceLeft())
       result.push({ row: this.row, column: this.column - 1 });
-    if (this.checkSpaceRight())
-      result.push({ row: this.row, column: this.column + 1 });
 
     return result;
   }
@@ -193,40 +193,80 @@ class DonkeyBox {
   handleClick = (e) => {
     // check ability to move
     let placesToMove = this.findPlacesToMove();
-    if (placesToMove.length == 0) return;
+    if (placesToMove.length == 0) return; // no spaces around
 
-    // element in grid layout
+    // clicked element (in grid layout)
     let element = e.target;
 
-    let index = 0; // first element of placesToMove, if there is only one place
+    let index = 0; // index of placesToMove array (will point to first element, if there is only one place around)
 
     if (placesToMove.length == 2) {
-      // 2 direction to move. By clicked part we need to determine direction
-      index = 0; // first option
-      console.log(e.offsetX, e.offsetY);
+      // 2 possible direction to move. Determine the direction by what area of the box is clicked
 
       // for small boxes (1 by 1) there might be  opposite and 90 degrees different directions
       if (placesToMove[0].row == placesToMove[1].row) {
         // moving horizontally
-        if (e.offsetX < element.clientWidth / 2) {
-          //
+        if (e.offsetX > element.clientWidth / 2) {
+          // left
           index = 1;
         }
       } else if (placesToMove[0].column == placesToMove[1].column) {
         // moving vertically
         if (e.offsetY < element.clientHeight / 2) {
-          //
+          // down
           index = 1;
         }
       } else {
         // 90 degrees different directions
         // there are 4 possible variants of empty spaces layouts relative to clicked box
+
+        //spaces are above and on the right
+        if (
+          placesToMove[0].row === this.row - 1 &&
+          placesToMove[1].column === this.column + 1
+        ) {
+          if (e.offsetY < element.clientWidth - e.offsetX) {
+            // right
+            index = 1;
+          }
+        }
+        //spaces are under and on the left
+        if (
+          placesToMove[0].row === this.row + 1 &&
+          placesToMove[1].column === this.column - 1
+        ) {
+          if (e.offsetY > element.clientWidth - e.offsetX) {
+            // left
+            index = 1;
+          }
+        }
+
+        //spaces are above and on the left
+        if (
+          placesToMove[0].row === this.row - 1 &&
+          placesToMove[1].column === this.column - 1
+        ) {
+          if (e.offsetY < e.offsetX) {
+            // left
+            index = 1;
+          }
+        }
+        //spaces are on the right and under
+        if (
+          placesToMove[0].column === this.column + 1 &&
+          placesToMove[1].row === this.row + 1
+        ) {
+          if (e.offsetY < e.offsetX) {
+            // down
+            index = 1;
+          }
+        }
       }
-      let partClicked = 1;
+      // let partClicked = 1;
       // TODO:
     }
-
-    //put corresponding box with absolute position above the clicked one
+    // to animate movement
+    // put corresponding box with absolute position above the clicked one
     //TODO:
 
     //hide the clicked box (aligned to grid)

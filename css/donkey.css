@@ -1,6 +1,9 @@
 * {
     margin: 0;
     padding: 0;
+    --main-size: min(0.8vw, 0.6vh);
+    -webkit-user-select: none; /* Safari */
+    user-select: none;
 }
 
 body {
@@ -12,13 +15,14 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    font-size: min(8vw, 6vh);
-    gap: 2px;
+    font-size: calc(var(--main-size)*10);
+    gap: var(--main-size);
     background-color: #022;
-    border: 5px solid #022;
-    
+    border: calc(var(--main-size)*2) solid #022;
     width: min(80vw, 64vh);    
-    height: min( 100vw , 80vh);
+    /* height is 5/4 of width */
+    height: min( 100vw , 80vh); 
+
     margin-left: auto;
     margin-right: auto;
     margin-top: min(12vw, 10vh);
