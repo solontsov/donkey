@@ -27,6 +27,7 @@ const boxDimensions = [
 ];
 
 const donkeyGameContainer = document.querySelector(".donkey-game");
+const menuElement = document.querySelector(".menu-sign");
 
 let donkeyGame; //instance of DonkeyGame class
 
@@ -288,7 +289,28 @@ class DonkeyBox {
   };
 }
 
+let menuClicked = false;
+
+const hideMenu = (e) => {
+    if (menuClicked) {
+      menuClicked = false;
+      return
+    }
+    console.log('window clicked') 
+    menuElement.style.display = 'grid'
+    menuList.style.left = '-65vw'; // hide
+} 
+
+const menuList = document.querySelector("ul");
+
 // when documents loads
 document.addEventListener("DOMContentLoaded", () => {
   donkeyGame = new DonkeyGame();
+  menuElement.addEventListener('click', (e) => {
+    console.log('menu clicked') 
+    menuClicked = true;
+    menuElement.style.display = 'none';
+    menuList.style.left = '0'; // make visible
+  } )
+  window.addEventListener("click", hideMenu);
 });
