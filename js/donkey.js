@@ -301,7 +301,7 @@ const hideMenu = (e) => {
     menuList.style.left = '-65vw'; // hide
 } 
 
-const menuList = document.querySelector("ul");
+const menuList = document.querySelector("menu");
 
 // when documents loads
 document.addEventListener("DOMContentLoaded", () => {
