@@ -54,7 +54,8 @@ class DonkeyGame {
       { row: 5, column: 3 },
     ];
   }
-
+  
+  
   updateSpaces() {
     // array representing 5 rows with 4 columns
     let arr = Array.from({ length: 5 }, () => Array(4).fill(true));
@@ -289,6 +290,7 @@ class DonkeyBox {
   };
 }
 
+const menuList = document.querySelector("menu");
 let menuClicked = false;
 
 const hideMenu = (e) => {
@@ -296,21 +298,60 @@ const hideMenu = (e) => {
       menuClicked = false;
       return
     }
-    console.log('window clicked') 
     menuElement.style.display = 'grid'
     menuList.style.left = '-65vw'; // hide
 } 
 
-const menuList = document.querySelector("menu");
+const actionRestart = () => {
+
+} 
+
+const actionSave = () => {
+  let currentPosition = []
+  for (const {row, column} of donkeyGame.boxArray) {
+    currentPosition.push([row,column])
+  }
+  localStorage.setItem('currentPosition', JSON.stringify(currentPosition));
+} 
+
+const actionRestore = () => {
+  let currentPosition = JSON.parse(localStorage.getItem('currentPosition'))
+  console.log(currentPosition)
+}
+
+const handleMenuItemClick = (e) => {
+
+    if (e.target.tagName === 'LI') {
+      const value = e.target.getAttribute('value')
+      switch (value) {
+        case 'restart':
+          console.log('restart clicked') 
+          actionRestart()
+          break;
+        case 'save':
+          console.log('save clicked') 
+          actionSave()
+          break;
+        case 'restore':
+          console.log('restore clicked') 
+          actionRestore()
+          break;
+        }
+    }
+} 
+
 
 // when documents loads
 document.addEventListener("DOMContentLoaded", () => {
   donkeyGame = new DonkeyGame();
+
   menuElement.addEventListener('click', (e) => {
-    console.log('menu clicked') 
     menuClicked = true;
     menuElement.style.display = 'none';
     menuList.style.left = '0'; // make visible
   } )
+  
+  menuList.addEventListener("click", handleMenuItemClick);
+  
   window.addEventListener("click", hideMenu);
 });
