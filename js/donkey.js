@@ -54,8 +54,7 @@ class DonkeyGame {
       { row: 5, column: 3 },
     ];
   }
-  
-  
+
   updateSpaces() {
     // array representing 5 rows with 4 columns
     let arr = Array.from({ length: 5 }, () => Array(4).fill(true));
@@ -77,6 +76,25 @@ class DonkeyGame {
       }
     }
   }
+
+  setPosition(gamePosition) {
+    this.boxArray.map((box, index) => {
+      box.row = gamePosition[index][0];
+      box.column = gamePosition[index][1];
+      box.setGridPosition();
+    });
+    this.updateSpaces();
+  }
+
+  restart() {
+    this.setPosition(donkeyGameStartingPosition);
+  }
+
+  restore() {
+    //TODO: handle no data case
+    let currentPosition = JSON.parse(localStorage.getItem("currentPosition"));
+    this.setPosition(currentPosition);
+  }
 }
 
 class DonkeyBox {
@@ -90,9 +108,9 @@ class DonkeyBox {
     this.createVisualElement();
   }
 
-  setGridPosition(element) {
-    element.style.gridRow = `${this.row} / span ${this.height}`;
-    element.style.gridColumn = `${this.column} / span ${this.width}`;
+  setGridPosition() {
+    this.visualElement.style.gridRow = `${this.row} / span ${this.height}`;
+    this.visualElement.style.gridColumn = `${this.column} / span ${this.width}`;
   }
 
   createVisualElement() {
@@ -100,7 +118,9 @@ class DonkeyBox {
     element.innerHTML = this.name;
 
     element.className = "dnk-box";
-    this.setGridPosition(element);
+    this.visualElement = element;
+
+    this.setGridPosition();
 
     // add click handlers
     // to make "this" available inside method handleClick
@@ -282,7 +302,7 @@ class DonkeyBox {
     //change the absolute position
 
     //change grid position of the clicked box
-    this.setGridPosition(element);
+    this.setGridPosition(); //element
 
     //show the clicked box after delay
 
@@ -294,64 +314,61 @@ const menuList = document.querySelector("menu");
 let menuClicked = false;
 
 const hideMenu = (e) => {
-    if (menuClicked) {
-      menuClicked = false;
-      return
-    }
-    menuElement.style.display = 'grid'
-    menuList.style.left = '-65vw'; // hide
-} 
+  if (menuClicked) {
+    menuClicked = false;
+    return;
+  }
+  menuElement.style.display = "grid";
+  menuList.style.left = "-65vw"; // hide
+};
 
 const actionRestart = () => {
-
-} 
+  donkeyGame.restart();
+};
 
 const actionSave = () => {
-  let currentPosition = []
-  for (const {row, column} of donkeyGame.boxArray) {
-    currentPosition.push([row,column])
+  let currentPosition = [];
+  for (const { row, column } of donkeyGame.boxArray) {
+    currentPosition.push([row, column]);
   }
-  localStorage.setItem('currentPosition', JSON.stringify(currentPosition));
-} 
+  localStorage.setItem("currentPosition", JSON.stringify(currentPosition));
+};
 
 const actionRestore = () => {
-  let currentPosition = JSON.parse(localStorage.getItem('currentPosition'))
-  console.log(currentPosition)
-}
+  donkeyGame.restore();
+};
 
 const handleMenuItemClick = (e) => {
-
-    if (e.target.tagName === 'LI') {
-      const value = e.target.getAttribute('value')
-      switch (value) {
-        case 'restart':
-          console.log('restart clicked') 
-          actionRestart()
-          break;
-        case 'save':
-          console.log('save clicked') 
-          actionSave()
-          break;
-        case 'restore':
-          console.log('restore clicked') 
-          actionRestore()
-          break;
-        }
+  if (e.target.tagName === "LI") {
+    const value = e.target.getAttribute("value");
+    switch (value) {
+      case "restart":
+        console.log("restart clicked");
+        actionRestart();
+        break;
+      case "save":
+        console.log("save clicked");
+        actionSave();
+        break;
+      case "restore":
+        console.log("restore clicked");
+        actionRestore();
+        break;
     }
-} 
-
+  }
+};
 
 // when documents loads
 document.addEventListener("DOMContentLoaded", () => {
   donkeyGame = new DonkeyGame();
 
-  menuElement.addEventListener('click', (e) => {
+  menuElement.addEventListener("click", (e) => {
     menuClicked = true;
-    menuElement.style.display = 'none';
-    menuList.style.left = '0'; // make visible
-  } )
-  
+    menuElement.style.display = "none";
+    menuList.style.left = "0"; // make visible
+  });
+
   menuList.addEventListener("click", handleMenuItemClick);
-  
+
   window.addEventListener("click", hideMenu);
 });
