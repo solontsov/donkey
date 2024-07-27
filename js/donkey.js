@@ -53,6 +53,8 @@ class DonkeyGame {
       { row: 5, column: 2 },
       { row: 5, column: 3 },
     ];
+
+    this.movingBox = new MovingBox();
   }
 
   updateSpaces() {
@@ -97,6 +99,35 @@ class DonkeyGame {
   }
 }
 
+class MovingBox {
+  constructor() {
+    let element = document.createElement("div");
+
+    element.className = "dnk-boxa";
+    this.visualElement = element;
+    donkeyGameContainer.appendChild(element);
+  }
+
+  mimicDonkeyBox(donkeyBox) {
+    this.visualElement.innerHTML = donkeyBox.name;
+
+    this.visualElement.style.gridRow = `${donkeyBox.row} / span ${donkeyBox.height}`;
+    this.visualElement.style.gridColumn = `${donkeyBox.column} / span ${donkeyBox.width}`;
+  }
+
+  followDonkeyBox(donkeyBox) {
+    this.visualElement.style.translate = `${donkeyBox.visualElement.offsetLeft - this.visualElement.offsetLeft}px ${donkeyBox.visualElement.offsetTop - this.visualElement.offsetTop}px`;
+  }
+
+  show() {
+    this.visualElement.style.display = "grid";
+  }
+
+  hide() {
+    this.visualElement.style.display = "none";
+    this.visualElement.style.translate = "0 0";
+  }
+}
 class DonkeyBox {
   constructor(props) {
     this.name = props.name;
@@ -109,6 +140,7 @@ class DonkeyBox {
   }
 
   setGridPosition() {
+    //change grid position of the clicked box
     this.visualElement.style.gridRow = `${this.row} / span ${this.height}`;
     this.visualElement.style.gridColumn = `${this.column} / span ${this.width}`;
   }
@@ -284,29 +316,33 @@ class DonkeyBox {
           }
         }
       }
-      // let partClicked = 1;
-      // TODO:
     }
-    // to animate movement
-    // put corresponding box with absolute position above the clicked one
-    //TODO:
 
-    //hide the clicked box (aligned to grid)
-    //e.target.style.display = 'none';
+    // put movingBox above the clicked one
+    donkeyGame.movingBox.mimicDonkeyBox(this);
+    donkeyGame.movingBox.show();
+
+    //hide the clicked box
+    this.visualElement.style.opacity = "0";
+    
+    //change movingBox position, a delay is necessary for the transition to become visible
+    setTimeout(() => {
+      donkeyGame.movingBox.followDonkeyBox(this);
+    }, 50);
 
     //make changes in object model
     Object.assign(this, placesToMove[index]);
     //deal with spaces
     donkeyGame.updateSpaces();
 
-    //change the absolute position
+    this.setGridPosition();
 
-    //change grid position of the clicked box
-    this.setGridPosition(); //element
-
-    //show the clicked box after delay
-
-    //hide box with absolute position
+    setTimeout(() => {
+      //show the clicked box after delay 
+      this.visualElement.style.opacity = "1";
+      //hide moving box
+      donkeyGame.movingBox.hide();
+    }, 250);
   };
 }
 

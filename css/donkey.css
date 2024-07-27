@@ -70,11 +70,8 @@ li {
 
 .dnk-boxa {
   display: none;
-  position: absolute;
-}
-
-.ab {
-  position: absolute;
-  background-color: blueviolet;
   z-index: 1;
+  transition-property: translate;
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.2s;
 }
