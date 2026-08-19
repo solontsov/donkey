@@ -12,6 +12,7 @@
             height: 50px;
             position: relative;
             /* Prevent text selection while dragging */
+            -webkit-user-select: none;
             user-select: none; 
         }
 
@@ -37,7 +38,7 @@
 
 <body>
     <div class="container" id="container">
-        <div class="switch" id="switch"></div>
+        <div class="switch" id="switch">8</div>
     </div>
 
     <script>
@@ -106,7 +107,7 @@
             // Remove listeners from window
             document.removeEventListener('pointermove', handlePointerMove);
             document.removeEventListener('pointerup', handlePointerUp);
-
+            
             // SNAP LOGIC: 
             // If the user dragged it past the halfway point (25px), turn ON. 
             // Otherwise, turn OFF.
