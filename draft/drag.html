@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag Switch</title>
+    <style>
+        .container {
+            border: 2px solid blue;
+            width: 100px;
+            height: 50px;
+            position: relative;
+            /* Prevent text selection while dragging */
+            user-select: none; 
+        }
+
+        .switch {
+            position: absolute;
+            box-sizing: border-box;
+            border: 8px solid #070;
+            width: 50px;
+            height: 50px;
+            /* Remove the transition for smooth dragging */
+            cursor: pointer; 
+            /* Prevent touch scrolling on mobile while holding */
+            touch-action: none; 
+            transition: left 200ms ease-in-out;
+        }
+
+        /* Visual feedback to show it's draggable */
+        .switch:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="switch" id="switch"></div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const switchEl = document.getElementById('switch');
+
+        let isDragging = false;
+        let wasDragged = false; // Track if the switch was dragged
+        let startX = 0;
+        let startLeft = 0;
+
+        // State: 0 (Off) or 1 (On)
+        let state = 0; 
+
+        let timeDown = 0;
+        let ignoreClick = false;
+
+        function updateSwitchPosition(newState) {
+            // 50px is the width of the switch. 
+            // If state is 1, move it to 50px (right). If 0, move to 0px (left).
+            const targetX = newState * 50;
+            switchEl.style.left = `${targetX}px`;
+        }
+
+        function handlePointerDown(e) {
+            isDragging = true;
+            
+            // Record the time when the pointer is pressed down
+            timeDown = Date.now();
+
+            // Get the current position of the switch
+            startLeft = parseFloat(switchEl.style.left || "0");
+            startX = e.clientX;
+
+            // Add event listeners to window so we can catch drags outside the element
+            document.addEventListener('pointermove', handlePointerMove);
+            document.addEventListener('pointerup', handlePointerUp);
+            console.log('Pointer down ');
+        }
+
+        function handlePointerMove(e) {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - startX;
+            
+            // Calculate new position based on mouse/finger movement
+            let newPosition = startLeft + deltaX;
+
+            // Keep the switch inside the container boundaries (0 to 50px)
+            if (newPosition < 0) newPosition = 0;
+            if (newPosition > 50) newPosition = 50;
+
+            switchEl.style.left = `${newPosition}px`;
+        }
+
+        function handlePointerUp(e) {
+            isDragging = false;
+
+            timeUp = Date.now();
+            if (timeUp - timeDown < 300) {
+                // If the pointer was released quickly, treat it as a click
+                ignoreClick = false;
+            } else {
+                ignoreClick = true; 
+            }   
+            // Remove listeners from window
+            document.removeEventListener('pointermove', handlePointerMove);
+            document.removeEventListener('pointerup', handlePointerUp);
+
+            // SNAP LOGIC: 
+            // If the user dragged it past the halfway point (25px), turn ON. 
+            // Otherwise, turn OFF.
+            const currentPosition = parseFloat(switchEl.style.left);
+            
+            if (currentPosition > 25) {
+                state = 1;
+            } else {
+                state = 0;
+            }
+
+            updateSwitchPosition(state);
+                console.log('Pointer UP ');
+    }
+
+        const handleClick = (e) => {
+            if (ignoreClick) {
+                ignoreClick = false; // Reset for next click
+                console.log('Click ignored due to drag');
+                return;
+            }
+            state = 1 - state;
+            updateSwitchPosition(state);
+            console.log('Click  ');
+
+        }
+
+        // Attach events to the switch element
+        switchEl.addEventListener('pointerdown', handlePointerDown);
+        switchEl.addEventListener('click', handleClick);
+        
+        // Prevent default behavior (like text selection) on pointer down
+        switchEl.addEventListener('dragstart', e => e.preventDefault());
+
+
+    </script>
+</body>
+
+</html>
